@@ -9,7 +9,7 @@ An AI-powered financial analysis tool that generates Big 4 consulting-style insi
 - Interactive charts: revenue trends, margins, debt vs equity, cash flow
 
 ## Live Demo
-[Click here to try it](https://kabrashubhda09.github.io/financial-health-analyser-)
+[Click here to try it](https://kabrashubhda09.github.io/financial-health-analyser-/)
 
 ## Built with
 - HTML, CSS, JavaScript
