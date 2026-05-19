@@ -1,0 +1,312 @@
+
+<h2 class="sr-only">Smart Financial Health Analyzer — paste company financials and get AI-powered consulting insights</h2>
+
+<style>
+  .fha-wrap { padding: 1.5rem 0; font-family: var(--font-sans); }
+  .fha-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .fha-tab { padding: 6px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); }
+  .fha-tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
+  .fha-grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
+  .fha-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
+  .fha-card-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
+  .fha-card-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
+  .fha-card-delta { font-size: 12px; margin-top: 4px; }
+  .pos { color: #1D9E75; } .neg { color: #D85A30; } .neu { color: var(--color-text-secondary); }
+  .fha-section { margin-bottom: 1.5rem; }
+  .fha-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .fha-chart-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
+  .fha-chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 1rem; }
+  .fha-ai-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+  .fha-ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+  .fha-ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
+  .fha-finding { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
+  .fha-finding:last-child { border-bottom: none; }
+  .fha-badge { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); flex-shrink: 0; margin-top: 1px; }
+  .badge-green { background: #E1F5EE; color: #0F6E56; }
+  .badge-amber { background: #FAEEDA; color: #854F0B; }
+  .badge-red { background: #FCEBEB; color: #A32D2D; }
+  .fha-input-area { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
+  .fha-input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
+  .fha-input-group label { display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
+  .fha-input-group input { width: 100%; box-sizing: border-box; }
+  .fha-btn { padding: 8px 20px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 13px; color: var(--color-text-primary); }
+  .fha-btn-primary { background: var(--color-background-secondary); font-weight: 500; }
+  .fha-loading { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-size: 14px; }
+  .fha-legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--color-text-secondary); flex-wrap: wrap; }
+  .fha-legend span { display: flex; align-items: center; gap: 4px; }
+  .fha-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+  @media (max-width: 500px) { .fha-row { grid-template-columns: 1fr; } }
+</style>
+
+<div class="fha-wrap">
+  <div style="margin-bottom: 1.5rem;">
+    <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 4px;">Enter 3 years of financial data for any company. AI will analyze it like an EY/PwC consultant.</p>
+  </div>
+
+  <div class="fha-input-area" id="inputPanel">
+    <p style="font-size: 13px; font-weight: 500; margin: 0 0 1rem; color: var(--color-text-primary);">Company financials (in ₹ Crores or $ Millions)</p>
+    <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px;">
+      <div class="fha-input-group">
+        <label>Company name</label>
+        <input type="text" id="companyName" placeholder="e.g. Reliance Industries" />
+      </div>
+    </div>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px;">Metric</td>
+            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px; text-align:right;">Year 1</td>
+            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px; text-align:right;">Year 2</td>
+            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px; text-align:right;">Year 3 (latest)</td>
+          </tr>
+        </thead>
+        <tbody id="inputTable">
+        </tbody>
+      </table>
+    </div>
+    <div style="display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; align-items: center;">
+      <button class="fha-btn fha-btn-primary" onclick="loadSample()">Load sample data ↗</button>
+      <button class="fha-btn fha-btn-primary" onclick="runAnalysis()" id="analyzeBtn">Analyze with AI ↗</button>
+      <span style="font-size: 12px; color: var(--color-text-secondary);" id="statusMsg"></span>
+    </div>
+  </div>
+
+  <div id="dashboard" style="display:none;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
+      <p style="font-size: 15px; font-weight: 500; margin: 0; color: var(--color-text-primary);" id="dashTitle">Financial Health Report</p>
+      <button class="fha-btn" onclick="resetDash()">← New analysis</button>
+    </div>
+
+    <div class="fha-grid4" id="kpiCards"></div>
+
+    <div class="fha-ai-box" id="aiInsights">
+      <div class="fha-ai-header"><div class="fha-ai-dot"></div>AI consulting analysis</div>
+      <div id="findingsContainer"></div>
+    </div>
+
+    <div class="fha-row fha-section">
+      <div class="fha-chart-box">
+        <div class="fha-legend">
+          <span><span class="fha-legend-dot" style="background:#378ADD;"></span>Revenue</span>
+          <span><span class="fha-legend-dot" style="background:#1D9E75;"></span>Net profit</span>
+        </div>
+        <div class="fha-chart-title">Revenue vs net profit trend</div>
+        <div style="position:relative;height:200px;"><canvas id="revChart" role="img" aria-label="Revenue and net profit trend over 3 years"></canvas></div>
+      </div>
+      <div class="fha-chart-box">
+        <div class="fha-legend">
+          <span><span class="fha-legend-dot" style="background:#BA7517;"></span>Gross margin</span>
+          <span><span class="fha-legend-dot" style="background:#D85A30;"></span>Net margin</span>
+        </div>
+        <div class="fha-chart-title">Profitability margins (%)</div>
+        <div style="position:relative;height:200px;"><canvas id="marginChart" role="img" aria-label="Gross and net profit margin trend"></canvas></div>
+      </div>
+    </div>
+
+    <div class="fha-row fha-section">
+      <div class="fha-chart-box">
+        <div class="fha-legend">
+          <span><span class="fha-legend-dot" style="background:#7F77DD;"></span>Total debt</span>
+          <span><span class="fha-legend-dot" style="background:#D4537E;"></span>Equity</span>
+        </div>
+        <div class="fha-chart-title">Debt vs equity position</div>
+        <div style="position:relative;height:200px;"><canvas id="debtChart" role="img" aria-label="Debt vs equity over 3 years"></canvas></div>
+      </div>
+      <div class="fha-chart-box">
+        <div class="fha-legend">
+          <span><span class="fha-legend-dot" style="background:#1D9E75;"></span>Operating cash flow</span>
+        </div>
+        <div class="fha-chart-title">Operating cash flow</div>
+        <div style="position:relative;height:200px;"><canvas id="cashChart" role="img" aria-label="Operating cash flow over 3 years"></canvas></div>
+      </div>
+    </div>
+
+    <div style="text-align:center; padding: 1rem 0 0;">
+      <button class="fha-btn" onclick="sendPrompt('Explain each finding in the financial analysis in simple terms for a beginner')">Explain findings simply ↗</button>
+      <button class="fha-btn" style="margin-left:8px;" onclick="sendPrompt('What would EY or PwC recommend for a company with these financials?')">What would EY/PwC recommend? ↗</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const metrics = [
+  { key: 'revenue', label: 'Revenue' },
+  { key: 'cogs', label: 'Cost of goods sold (COGS)' },
+  { key: 'operatingExpenses', label: 'Operating expenses (SG&A etc.)' },
+  { key: 'netProfit', label: 'Net profit' },
+  { key: 'totalAssets', label: 'Total assets' },
+  { key: 'totalDebt', label: 'Total debt' },
+  { key: 'shareholderEquity', label: "Shareholder's equity" },
+  { key: 'operatingCashFlow', label: 'Operating cash flow' },
+];
+
+const sampleData = {
+  companyName: 'Tata Consultancy Services',
+  revenue: [189289, 213240, 240893],
+  cogs: [92000, 105000, 120000],
+  operatingExpenses: [41000, 44000, 48000],
+  netProfit: [32430, 36000, 42000],
+  totalAssets: [118000, 128000, 141000],
+  totalDebt: [5200, 4800, 4100],
+  shareholderEquity: [84000, 90000, 99000],
+  operatingCashFlow: [36000, 41000, 47000],
+};
+
+let years = ['Year 1', 'Year 2', 'Year 3'];
+let chartInstances = {};
+
+function buildTable() {
+  const tb = document.getElementById('inputTable');
+  tb.innerHTML = '';
+  metrics.forEach(m => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="padding:5px 8px; color:var(--color-text-primary); font-size:13px; border-top:0.5px solid var(--color-border-tertiary);">${m.label}</td>
+      <td style="padding:5px 4px; border-top:0.5px solid var(--color-border-tertiary);"><input type="number" id="${m.key}_0" placeholder="0" style="width:100%;text-align:right;box-sizing:border-box;" /></td>
+      <td style="padding:5px 4px; border-top:0.5px solid var(--color-border-tertiary);"><input type="number" id="${m.key}_1" placeholder="0" style="width:100%;text-align:right;box-sizing:border-box;" /></td>
+      <td style="padding:5px 4px; border-top:0.5px solid var(--color-border-tertiary);"><input type="number" id="${m.key}_2" placeholder="0" style="width:100%;text-align:right;box-sizing:border-box;" /></td>`;
+    tb.appendChild(tr);
+  });
+}
+
+function loadSample() {
+  document.getElementById('companyName').value = sampleData.companyName;
+  metrics.forEach(m => {
+    for (let i = 0; i < 3; i++) {
+      const el = document.getElementById(`${m.key}_${i}`);
+      if (el) el.value = sampleData[m.key][i];
+    }
+  });
+  document.getElementById('statusMsg').textContent = 'Sample data loaded. Click Analyze!';
+}
+
+function getData() {
+  const data = { companyName: document.getElementById('companyName').value || 'Company' };
+  metrics.forEach(m => {
+    data[m.key] = [0,1,2].map(i => parseFloat(document.getElementById(`${m.key}_${i}`)?.value) || 0);
+  });
+  return data;
+}
+
+function pct(val, dec=1) { return val.toFixed(dec) + '%'; }
+function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'K' : Math.round(n).toLocaleString(); }
+function delta(arr) { if (arr[0] === 0) return null; return ((arr[2]-arr[0])/arr[0]*100).toFixed(1); }
+function growthClass(v) { return v > 0 ? 'pos' : v < 0 ? 'neg' : 'neu'; }
+
+function computeKPIs(d) {
+  const grossProfit = d.revenue.map((r,i) => r - d.cogs[i]);
+  const grossMargin = d.revenue.map((r,i) => r > 0 ? (grossProfit[i]/r*100) : 0);
+  const netMargin = d.revenue.map((r,i) => r > 0 ? (d.netProfit[i]/r*100) : 0);
+  const debtToEquity = d.shareholderEquity.map((e,i) => e > 0 ? (d.totalDebt[i]/e) : 0);
+  const roe = d.shareholderEquity.map((e,i) => e > 0 ? (d.netProfit[i]/e*100) : 0);
+  const revGrowth = d.revenue[0] > 0 ? ((d.revenue[2]-d.revenue[0])/d.revenue[0]*100) : 0;
+  return { grossProfit, grossMargin, netMargin, debtToEquity, roe, revGrowth };
+}
+
+async function runAnalysis() {
+  const d = getData();
+  if (d.revenue.every(v => v === 0)) { document.getElementById('statusMsg').textContent = 'Please enter revenue data first.'; return; }
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('statusMsg').textContent = 'Analyzing...';
+
+  const kpis = computeKPIs(d);
+
+  const prompt = `You are a Big 4 consultant (EY/PwC) analyzing a company's financial health. Given this 3-year financial data for ${d.companyName}:
+
+Revenue: ${d.revenue.join(', ')}
+COGS: ${d.cogs.join(', ')}
+Net Profit: ${d.netProfit.join(', ')}
+Total Debt: ${d.totalDebt.join(', ')}
+Shareholder Equity: ${d.shareholderEquity.join(', ')}
+Operating Cash Flow: ${d.operatingCashFlow.join(', ')}
+Gross Margin (%): ${kpis.grossMargin.map(v=>v.toFixed(1)).join(', ')}
+Net Margin (%): ${kpis.netMargin.map(v=>v.toFixed(1)).join(', ')}
+Debt-to-Equity: ${kpis.debtToEquity.map(v=>v.toFixed(2)).join(', ')}
+
+Respond ONLY with a JSON array of exactly 5 findings. Each finding has: "type" (one of: "strength", "risk", "watch"), "title" (5 words max), "detail" (1-2 sentences, specific to the numbers). No markdown, no preamble, no explanation outside the JSON array.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
+    });
+    const json = await res.json();
+    const text = json.content.map(c => c.text || '').join('');
+    const clean = text.replace(/```json|```/g, '').trim();
+    const findings = JSON.parse(clean);
+    renderDashboard(d, kpis, findings);
+  } catch(e) {
+    renderDashboard(d, kpis, null);
+  }
+
+  document.getElementById('analyzeBtn').disabled = false;
+  document.getElementById('statusMsg').textContent = '';
+}
+
+function renderDashboard(d, kpis, findings) {
+  document.getElementById('inputPanel').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  document.getElementById('dashTitle').textContent = `Financial Health Report — ${d.companyName}`;
+
+  const revD = delta(d.revenue);
+  const npD = delta(d.netProfit);
+  const cards = [
+    { label: 'Revenue (latest)', val: fmt(d.revenue[2]), delta: revD !== null ? revD+'% (3yr)' : '', cls: growthClass(parseFloat(revD)) },
+    { label: 'Net profit (latest)', val: fmt(d.netProfit[2]), delta: npD !== null ? npD+'% (3yr)' : '', cls: growthClass(parseFloat(npD)) },
+    { label: 'Net margin', val: pct(kpis.netMargin[2]), delta: 'Year 3', cls: kpis.netMargin[2] > 10 ? 'pos' : kpis.netMargin[2] > 5 ? 'neu' : 'neg' },
+    { label: 'Debt / equity', val: kpis.debtToEquity[2].toFixed(2)+'x', delta: 'Year 3', cls: kpis.debtToEquity[2] < 1 ? 'pos' : kpis.debtToEquity[2] < 2 ? 'neu' : 'neg' },
+  ];
+
+  document.getElementById('kpiCards').innerHTML = cards.map(c => `
+    <div class="fha-card">
+      <div class="fha-card-label">${c.label}</div>
+      <div class="fha-card-val">${c.val}</div>
+      <div class="fha-card-delta ${c.cls}">${c.delta}</div>
+    </div>`).join('');
+
+  const fc = document.getElementById('findingsContainer');
+  if (findings) {
+    fc.innerHTML = findings.map(f => {
+      const badgeClass = f.type === 'strength' ? 'badge-green' : f.type === 'risk' ? 'badge-red' : 'badge-amber';
+      const badgeLabel = f.type === 'strength' ? 'Strength' : f.type === 'risk' ? 'Risk' : 'Watch';
+      return `<div class="fha-finding"><span class="fha-badge ${badgeClass}">${badgeLabel}</span><span><strong>${f.title}</strong> — ${f.detail}</span></div>`;
+    }).join('');
+  } else {
+    fc.innerHTML = '<div class="fha-finding"><span>AI analysis unavailable. Review the charts below for key trends.</span></div>';
+  }
+
+  const lbls = ['Year 1', 'Year 2', 'Year 3'];
+  const mkChart = (id, cfg) => {
+    if (chartInstances[id]) chartInstances[id].destroy();
+    chartInstances[id] = new Chart(document.getElementById(id), cfg);
+  };
+
+  mkChart('revChart', { type: 'bar', data: { labels: lbls, datasets: [
+    { label: 'Revenue', data: d.revenue, backgroundColor: '#B5D4F4', borderColor: '#378ADD', borderWidth: 1.5 },
+    { label: 'Net profit', data: d.netProfit, backgroundColor: '#9FE1CB', borderColor: '#1D9E75', borderWidth: 1.5 },
+  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { autoSkip: false } } } } });
+
+  mkChart('marginChart', { type: 'line', data: { labels: lbls, datasets: [
+    { label: 'Gross margin', data: kpis.grossMargin.map(v=>parseFloat(v.toFixed(1))), borderColor: '#BA7517', backgroundColor: 'rgba(186,117,23,0.1)', tension: 0.3, pointRadius: 4 },
+    { label: 'Net margin', data: kpis.netMargin.map(v=>parseFloat(v.toFixed(1))), borderColor: '#D85A30', backgroundColor: 'rgba(216,90,48,0.1)', tension: 0.3, pointRadius: 4 },
+  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => v+'%' } } } } });
+
+  mkChart('debtChart', { type: 'bar', data: { labels: lbls, datasets: [
+    { label: 'Total debt', data: d.totalDebt, backgroundColor: '#AFA9EC', borderColor: '#7F77DD', borderWidth: 1.5 },
+    { label: 'Equity', data: d.shareholderEquity, backgroundColor: '#F4C0D1', borderColor: '#D4537E', borderWidth: 1.5 },
+  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { autoSkip: false } } } } });
+
+  mkChart('cashChart', { type: 'line', data: { labels: lbls, datasets: [
+    { label: 'Operating cash flow', data: d.operatingCashFlow, borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.1)', tension: 0.3, pointRadius: 5, fill: true },
+  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+}
+
+function resetDash() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('inputPanel').style.display = 'block';
+}
+
+buildTable();
+</script>
