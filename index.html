@@ -1,312 +1,298 @@
-
-<h2 class="sr-only">Smart Financial Health Analyzer — paste company financials and get AI-powered consulting insights</h2>
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Smart Financial Health Analyzer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-  .fha-wrap { padding: 1.5rem 0; font-family: var(--font-sans); }
-  .fha-tabs { display: flex; gap: 8px; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .fha-tab { padding: 6px 16px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 13px; color: var(--color-text-secondary); }
-  .fha-tab.active { background: var(--color-background-secondary); color: var(--color-text-primary); border-color: var(--color-border-primary); font-weight: 500; }
-  .fha-grid4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 1.5rem; }
-  .fha-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 1rem; }
-  .fha-card-label { font-size: 12px; color: var(--color-text-secondary); margin-bottom: 6px; }
-  .fha-card-val { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
-  .fha-card-delta { font-size: 12px; margin-top: 4px; }
-  .pos { color: #1D9E75; } .neg { color: #D85A30; } .neu { color: var(--color-text-secondary); }
-  .fha-section { margin-bottom: 1.5rem; }
-  .fha-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .fha-chart-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
-  .fha-chart-title { font-size: 13px; font-weight: 500; color: var(--color-text-secondary); margin-bottom: 1rem; }
-  .fha-ai-box { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
-  .fha-ai-header { display: flex; align-items: center; gap: 8px; margin-bottom: 1rem; font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
-  .fha-ai-dot { width: 8px; height: 8px; border-radius: 50%; background: #1D9E75; flex-shrink: 0; }
-  .fha-finding { display: flex; gap: 10px; padding: 10px 0; border-bottom: 0.5px solid var(--color-border-tertiary); font-size: 13px; color: var(--color-text-secondary); line-height: 1.5; }
-  .fha-finding:last-child { border-bottom: none; }
-  .fha-badge { font-size: 11px; padding: 2px 8px; border-radius: var(--border-radius-md); flex-shrink: 0; margin-top: 1px; }
-  .badge-green { background: #E1F5EE; color: #0F6E56; }
-  .badge-amber { background: #FAEEDA; color: #854F0B; }
-  .badge-red { background: #FCEBEB; color: #A32D2D; }
-  .fha-input-area { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1.25rem; margin-bottom: 1.5rem; }
-  .fha-input-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-bottom: 10px; }
-  .fha-input-group label { display: block; font-size: 12px; color: var(--color-text-secondary); margin-bottom: 4px; }
-  .fha-input-group input { width: 100%; box-sizing: border-box; }
-  .fha-btn { padding: 8px 20px; border-radius: var(--border-radius-md); border: 0.5px solid var(--color-border-secondary); background: transparent; cursor: pointer; font-size: 13px; color: var(--color-text-primary); }
-  .fha-btn-primary { background: var(--color-background-secondary); font-weight: 500; }
-  .fha-loading { text-align: center; padding: 2rem; color: var(--color-text-secondary); font-size: 14px; }
-  .fha-legend { display: flex; gap: 16px; margin-bottom: 8px; font-size: 12px; color: var(--color-text-secondary); flex-wrap: wrap; }
-  .fha-legend span { display: flex; align-items: center; gap: 4px; }
-  .fha-legend-dot { width: 10px; height: 10px; border-radius: 2px; }
-  @media (max-width: 500px) { .fha-row { grid-template-columns: 1fr; } }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #0a0f1e; --navy2: #111827; --navy3: #1a2236; --navy4: #243048;
+    --gold: #c9a84c; --gold2: #e8c97a; --gold3: #f5e0a0;
+    --text: #e8eaf0; --text2: #9aa3b8; --text3: #5c6480;
+    --green: #2dd4a0; --red: #f06a6a; --amber: #f5a623;
+    --border: rgba(201,168,76,0.15); --border2: rgba(201,168,76,0.08);
+  }
+  html, body { background: var(--navy); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+  body::before {
+    content: ''; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse 80% 50% at 10% 0%, rgba(201,168,76,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 90% 100%, rgba(45,212,160,0.04) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+  header { text-align: center; padding: 3rem 0 2.5rem; }
+  .logo-line { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 1rem; }
+  .logo-icon { width: 36px; height: 36px; border: 1.5px solid var(--gold); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .logo-icon svg { width: 18px; height: 18px; stroke: var(--gold); fill: none; stroke-width: 1.5; }
+  .logo-text { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); font-weight: 500; }
+  h1 { font-family: 'DM Serif Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 400; color: var(--text); line-height: 1.15; }
+  h1 span { color: var(--gold); }
+  .subtitle { margin-top: 0.75rem; font-size: 14px; color: var(--text2); letter-spacing: 0.02em; }
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.3; margin: 2rem 0; }
+  .input-panel { background: var(--navy2); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; margin-bottom: 1.5rem; }
+  .panel-label { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); font-weight: 500; margin-bottom: 1.25rem; }
+  .company-wrap { margin-bottom: 1.5rem; }
+  .company-wrap label { display: block; font-size: 12px; color: var(--text2); margin-bottom: 6px; }
+  .company-wrap input { width: 100%; background: var(--navy3); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .company-wrap input:focus { border-color: var(--gold); }
+  .company-wrap input::placeholder { color: var(--text3); }
+  .table-wrap { overflow-x: auto; margin-bottom: 1.5rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { padding: 8px 10px; color: var(--text2); font-weight: 400; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid var(--border2); text-align: right; }
+  thead th:first-child { text-align: left; }
+  tbody tr { border-bottom: 1px solid var(--border2); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(201,168,76,0.03); }
+  tbody td { padding: 7px 10px; color: var(--text); }
+  tbody td:first-child { color: var(--text2); font-size: 12px; }
+  tbody td input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--border2); padding: 3px 6px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; text-align: right; outline: none; transition: border-color 0.15s; }
+  tbody td input:focus { border-bottom-color: var(--gold); }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .btn { padding: 9px 20px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; letter-spacing: 0.03em; }
+  .btn-ghost { background: transparent; border: 1px solid var(--border); color: var(--text2); }
+  .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+  .btn-primary { background: var(--gold); border: 1px solid var(--gold); color: var(--navy); }
+  .btn-primary:hover { background: var(--gold2); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .status { font-size: 12px; color: var(--text3); }
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 1.5rem; }
+  .kpi-card { background: var(--navy2); border: 1px solid var(--border2); border-radius: 12px; padding: 1.1rem 1.25rem; position: relative; overflow: hidden; }
+  .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: linear-gradient(90deg, var(--gold), transparent); opacity: 0.5; }
+  .kpi-label { font-size: 11px; color: var(--text3); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px; }
+  .kpi-val { font-family: 'DM Serif Display', serif; font-size: 1.6rem; color: var(--text); line-height: 1; margin-bottom: 4px; }
+  .kpi-delta { font-size: 12px; }
+  .pos { color: var(--green); } .neg { color: var(--red); } .neu { color: var(--text3); }
+  .dash-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
+  .dash-title { font-family: 'DM Serif Display', serif; font-size: 1.5rem; color: var(--text); }
+  .dash-sub { font-size: 12px; color: var(--text3); margin-top: 3px; }
+  .ai-box { background: var(--navy2); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; margin-bottom: 1.5rem; }
+  .ai-header { display: flex; align-items: center; gap: 10px; margin-bottom: 1.25rem; }
+  .ai-pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--green); position: relative; }
+  .ai-pulse::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 1.5px solid var(--green); opacity: 0.4; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:0.4} 50%{transform:scale(1.4);opacity:0} }
+  .ai-header-text { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); font-weight: 500; }
+  .finding { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border2); align-items: flex-start; }
+  .finding:last-child { border-bottom: none; padding-bottom: 0; }
+  .badge { font-size: 10px; padding: 3px 9px; border-radius: 20px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; flex-shrink: 0; margin-top: 2px; }
+  .badge-strength { background: rgba(45,212,160,0.12); color: var(--green); border: 1px solid rgba(45,212,160,0.2); }
+  .badge-risk { background: rgba(240,106,106,0.12); color: var(--red); border: 1px solid rgba(240,106,106,0.2); }
+  .badge-watch { background: rgba(245,166,35,0.12); color: var(--amber); border: 1px solid rgba(245,166,35,0.2); }
+  .finding-text { font-size: 13px; color: var(--text2); line-height: 1.6; }
+  .finding-text strong { color: var(--text); font-weight: 500; }
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 1.5rem; }
+  @media (max-width: 560px) { .charts-grid { grid-template-columns: 1fr; } }
+  .chart-card { background: var(--navy2); border: 1px solid var(--border2); border-radius: 12px; padding: 1.25rem; }
+  .chart-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text3); margin-bottom: 6px; }
+  .chart-legend { display: flex; gap: 14px; margin-bottom: 12px; flex-wrap: wrap; }
+  .chart-legend span { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text3); }
+  .leg-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
+  .action-row { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; padding: 1rem 0; }
+  footer { text-align: center; padding: 2rem 0 0; font-size: 11px; color: var(--text3); letter-spacing: 0.08em; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  .fade-up { animation: fadeUp 0.4s ease forwards; }
+  .fade-up-2 { animation: fadeUp 0.4s 0.1s ease both; }
+  .fade-up-3 { animation: fadeUp 0.4s 0.2s ease both; }
 </style>
-
-<div class="fha-wrap">
-  <div style="margin-bottom: 1.5rem;">
-    <p style="font-size: 13px; color: var(--color-text-secondary); margin: 0 0 4px;">Enter 3 years of financial data for any company. AI will analyze it like an EY/PwC consultant.</p>
-  </div>
-
-  <div class="fha-input-area" id="inputPanel">
-    <p style="font-size: 13px; font-weight: 500; margin: 0 0 1rem; color: var(--color-text-primary);">Company financials (in ₹ Crores or $ Millions)</p>
-    <div style="display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 10px;">
-      <div class="fha-input-group">
-        <label>Company name</label>
-        <input type="text" id="companyName" placeholder="e.g. Reliance Industries" />
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo-line">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
       </div>
+      <span class="logo-text">Financial Intelligence</span>
     </div>
-    <div style="overflow-x: auto;">
-      <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
+    <h1>Smart Financial<br><span>Health Analyzer</span></h1>
+    <p class="subtitle">Big 4 consulting-grade insights &middot; Powered by AI</p>
+  </header>
+
+  <div class="divider"></div>
+
+  <div class="input-panel fade-up" id="inputPanel">
+    <div class="panel-label">Company financials &mdash; &8377; Crores or $ Millions</div>
+    <div class="company-wrap">
+      <label>Company name</label>
+      <input type="text" id="companyName" placeholder="e.g. Infosys Limited" />
+    </div>
+    <div class="table-wrap">
+      <table>
         <thead>
           <tr>
-            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px;">Metric</td>
-            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px; text-align:right;">Year 1</td>
-            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px; text-align:right;">Year 2</td>
-            <td style="padding: 6px 8px; color: var(--color-text-secondary); font-size: 12px; text-align:right;">Year 3 (latest)</td>
+            <th>Metric</th>
+            <th>Year 1</th>
+            <th>Year 2</th>
+            <th>Year 3 (latest)</th>
           </tr>
         </thead>
-        <tbody id="inputTable">
-        </tbody>
+        <tbody id="inputTable"></tbody>
       </table>
     </div>
-    <div style="display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; align-items: center;">
-      <button class="fha-btn fha-btn-primary" onclick="loadSample()">Load sample data ↗</button>
-      <button class="fha-btn fha-btn-primary" onclick="runAnalysis()" id="analyzeBtn">Analyze with AI ↗</button>
-      <span style="font-size: 12px; color: var(--color-text-secondary);" id="statusMsg"></span>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="loadSample()">Load sample data</button>
+      <button class="btn btn-primary" onclick="runAnalysis()" id="analyzeBtn">Analyze with AI &rarr;</button>
+      <span class="status" id="statusMsg"></span>
     </div>
   </div>
 
   <div id="dashboard" style="display:none;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px;">
-      <p style="font-size: 15px; font-weight: 500; margin: 0; color: var(--color-text-primary);" id="dashTitle">Financial Health Report</p>
-      <button class="fha-btn" onclick="resetDash()">← New analysis</button>
+    <div class="dash-header fade-up">
+      <div>
+        <div class="dash-title" id="dashTitle">Financial Report</div>
+        <div class="dash-sub" id="dashSub"></div>
+      </div>
+      <button class="btn btn-ghost" onclick="resetDash()">&larr; New analysis</button>
     </div>
-
-    <div class="fha-grid4" id="kpiCards"></div>
-
-    <div class="fha-ai-box" id="aiInsights">
-      <div class="fha-ai-header"><div class="fha-ai-dot"></div>AI consulting analysis</div>
+    <div class="kpi-grid fade-up-2" id="kpiCards"></div>
+    <div class="ai-box fade-up-3">
+      <div class="ai-header">
+        <div class="ai-pulse"></div>
+        <span class="ai-header-text">AI consulting analysis</span>
+      </div>
       <div id="findingsContainer"></div>
     </div>
-
-    <div class="fha-row fha-section">
-      <div class="fha-chart-box">
-        <div class="fha-legend">
-          <span><span class="fha-legend-dot" style="background:#378ADD;"></span>Revenue</span>
-          <span><span class="fha-legend-dot" style="background:#1D9E75;"></span>Net profit</span>
+    <div class="charts-grid fade-up-3">
+      <div class="chart-card">
+        <div class="chart-label">Revenue vs net profit</div>
+        <div class="chart-legend">
+          <span><span class="leg-dot" style="background:#c9a84c;"></span>Revenue</span>
+          <span><span class="leg-dot" style="background:#2dd4a0;"></span>Net profit</span>
         </div>
-        <div class="fha-chart-title">Revenue vs net profit trend</div>
-        <div style="position:relative;height:200px;"><canvas id="revChart" role="img" aria-label="Revenue and net profit trend over 3 years"></canvas></div>
+        <div style="position:relative;height:180px;"><canvas id="revChart" role="img" aria-label="Revenue and net profit over 3 years"></canvas></div>
       </div>
-      <div class="fha-chart-box">
-        <div class="fha-legend">
-          <span><span class="fha-legend-dot" style="background:#BA7517;"></span>Gross margin</span>
-          <span><span class="fha-legend-dot" style="background:#D85A30;"></span>Net margin</span>
+      <div class="chart-card">
+        <div class="chart-label">Profitability margins %</div>
+        <div class="chart-legend">
+          <span><span class="leg-dot" style="background:#c9a84c;"></span>Gross</span>
+          <span><span class="leg-dot" style="background:#f5a623;"></span>Net</span>
         </div>
-        <div class="fha-chart-title">Profitability margins (%)</div>
-        <div style="position:relative;height:200px;"><canvas id="marginChart" role="img" aria-label="Gross and net profit margin trend"></canvas></div>
+        <div style="position:relative;height:180px;"><canvas id="marginChart" role="img" aria-label="Margin trends"></canvas></div>
       </div>
-    </div>
-
-    <div class="fha-row fha-section">
-      <div class="fha-chart-box">
-        <div class="fha-legend">
-          <span><span class="fha-legend-dot" style="background:#7F77DD;"></span>Total debt</span>
-          <span><span class="fha-legend-dot" style="background:#D4537E;"></span>Equity</span>
+      <div class="chart-card">
+        <div class="chart-label">Debt vs equity</div>
+        <div class="chart-legend">
+          <span><span class="leg-dot" style="background:#f06a6a;"></span>Debt</span>
+          <span><span class="leg-dot" style="background:#7b8cde;"></span>Equity</span>
         </div>
-        <div class="fha-chart-title">Debt vs equity position</div>
-        <div style="position:relative;height:200px;"><canvas id="debtChart" role="img" aria-label="Debt vs equity over 3 years"></canvas></div>
+        <div style="position:relative;height:180px;"><canvas id="debtChart" role="img" aria-label="Debt vs equity"></canvas></div>
       </div>
-      <div class="fha-chart-box">
-        <div class="fha-legend">
-          <span><span class="fha-legend-dot" style="background:#1D9E75;"></span>Operating cash flow</span>
+      <div class="chart-card">
+        <div class="chart-label">Operating cash flow</div>
+        <div class="chart-legend">
+          <span><span class="leg-dot" style="background:#2dd4a0;"></span>Cash flow</span>
         </div>
-        <div class="fha-chart-title">Operating cash flow</div>
-        <div style="position:relative;height:200px;"><canvas id="cashChart" role="img" aria-label="Operating cash flow over 3 years"></canvas></div>
+        <div style="position:relative;height:180px;"><canvas id="cashChart" role="img" aria-label="Operating cash flow trend"></canvas></div>
       </div>
     </div>
-
-    <div style="text-align:center; padding: 1rem 0 0;">
-      <button class="fha-btn" onclick="sendPrompt('Explain each finding in the financial analysis in simple terms for a beginner')">Explain findings simply ↗</button>
-      <button class="fha-btn" style="margin-left:8px;" onclick="sendPrompt('What would EY or PwC recommend for a company with these financials?')">What would EY/PwC recommend? ↗</button>
+    <div class="action-row fade-up-3">
+      <button class="btn btn-ghost" onclick="sendToChat('Explain each finding in simple terms for a beginner')">Explain findings simply &rarr;</button>
+      <button class="btn btn-ghost" onclick="sendToChat('What would EY or PwC recommend for a company with these financials?')">EY/PwC recommendations &rarr;</button>
     </div>
   </div>
+
+  <footer>Built by Shubhda &middot; Penn State Smeal College of Business &middot; Powered by Claude AI</footer>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 const metrics = [
-  { key: 'revenue', label: 'Revenue' },
-  { key: 'cogs', label: 'Cost of goods sold (COGS)' },
-  { key: 'operatingExpenses', label: 'Operating expenses (SG&A etc.)' },
-  { key: 'netProfit', label: 'Net profit' },
-  { key: 'totalAssets', label: 'Total assets' },
-  { key: 'totalDebt', label: 'Total debt' },
-  { key: 'shareholderEquity', label: "Shareholder's equity" },
-  { key: 'operatingCashFlow', label: 'Operating cash flow' },
+  {key:'revenue',label:'Revenue'},
+  {key:'cogs',label:'Cost of goods sold (COGS)'},
+  {key:'operatingExpenses',label:'Operating expenses'},
+  {key:'netProfit',label:'Net profit'},
+  {key:'totalAssets',label:'Total assets'},
+  {key:'totalDebt',label:'Total debt'},
+  {key:'shareholderEquity',label:"Shareholder's equity"},
+  {key:'operatingCashFlow',label:'Operating cash flow'},
 ];
-
-const sampleData = {
-  companyName: 'Tata Consultancy Services',
-  revenue: [189289, 213240, 240893],
-  cogs: [92000, 105000, 120000],
-  operatingExpenses: [41000, 44000, 48000],
-  netProfit: [32430, 36000, 42000],
-  totalAssets: [118000, 128000, 141000],
-  totalDebt: [5200, 4800, 4100],
-  shareholderEquity: [84000, 90000, 99000],
-  operatingCashFlow: [36000, 41000, 47000],
+const sample = {
+  companyName:'Infosys Limited',
+  revenue:[121641,146767,153670],cogs:[72000,88000,93000],
+  operatingExpenses:[18000,20000,21000],netProfit:[22110,24095,26248],
+  totalAssets:[90138,95000,101000],totalDebt:[3200,2800,2500],
+  shareholderEquity:[62000,65000,70000],operatingCashFlow:[24000,26000,28500],
 };
-
-let years = ['Year 1', 'Year 2', 'Year 3'];
-let chartInstances = {};
-
+let charts = {};
 function buildTable() {
   const tb = document.getElementById('inputTable');
   tb.innerHTML = '';
   metrics.forEach(m => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="padding:5px 8px; color:var(--color-text-primary); font-size:13px; border-top:0.5px solid var(--color-border-tertiary);">${m.label}</td>
-      <td style="padding:5px 4px; border-top:0.5px solid var(--color-border-tertiary);"><input type="number" id="${m.key}_0" placeholder="0" style="width:100%;text-align:right;box-sizing:border-box;" /></td>
-      <td style="padding:5px 4px; border-top:0.5px solid var(--color-border-tertiary);"><input type="number" id="${m.key}_1" placeholder="0" style="width:100%;text-align:right;box-sizing:border-box;" /></td>
-      <td style="padding:5px 4px; border-top:0.5px solid var(--color-border-tertiary);"><input type="number" id="${m.key}_2" placeholder="0" style="width:100%;text-align:right;box-sizing:border-box;" /></td>`;
+    tr.innerHTML = `<td>${m.label}</td><td><input type="number" id="${m.key}_0" placeholder="0" /></td><td><input type="number" id="${m.key}_1" placeholder="0" /></td><td><input type="number" id="${m.key}_2" placeholder="0" /></td>`;
     tb.appendChild(tr);
   });
 }
-
 function loadSample() {
-  document.getElementById('companyName').value = sampleData.companyName;
-  metrics.forEach(m => {
-    for (let i = 0; i < 3; i++) {
-      const el = document.getElementById(`${m.key}_${i}`);
-      if (el) el.value = sampleData[m.key][i];
-    }
-  });
-  document.getElementById('statusMsg').textContent = 'Sample data loaded. Click Analyze!';
+  document.getElementById('companyName').value = sample.companyName;
+  metrics.forEach(m => [0,1,2].forEach(i => { const el = document.getElementById(`${m.key}_${i}`); if(el) el.value = sample[m.key][i]; }));
+  document.getElementById('statusMsg').textContent = 'Sample data loaded!';
 }
-
 function getData() {
-  const data = { companyName: document.getElementById('companyName').value || 'Company' };
-  metrics.forEach(m => {
-    data[m.key] = [0,1,2].map(i => parseFloat(document.getElementById(`${m.key}_${i}`)?.value) || 0);
-  });
-  return data;
+  const d = {companyName: document.getElementById('companyName').value || 'Company'};
+  metrics.forEach(m => { d[m.key] = [0,1,2].map(i => parseFloat(document.getElementById(`${m.key}_${i}`)?.value)||0); });
+  return d;
 }
-
-function pct(val, dec=1) { return val.toFixed(dec) + '%'; }
-function fmt(n) { return n >= 1000 ? (n/1000).toFixed(1)+'K' : Math.round(n).toLocaleString(); }
-function delta(arr) { if (arr[0] === 0) return null; return ((arr[2]-arr[0])/arr[0]*100).toFixed(1); }
-function growthClass(v) { return v > 0 ? 'pos' : v < 0 ? 'neg' : 'neu'; }
-
 function computeKPIs(d) {
-  const grossProfit = d.revenue.map((r,i) => r - d.cogs[i]);
-  const grossMargin = d.revenue.map((r,i) => r > 0 ? (grossProfit[i]/r*100) : 0);
-  const netMargin = d.revenue.map((r,i) => r > 0 ? (d.netProfit[i]/r*100) : 0);
-  const debtToEquity = d.shareholderEquity.map((e,i) => e > 0 ? (d.totalDebt[i]/e) : 0);
-  const roe = d.shareholderEquity.map((e,i) => e > 0 ? (d.netProfit[i]/e*100) : 0);
-  const revGrowth = d.revenue[0] > 0 ? ((d.revenue[2]-d.revenue[0])/d.revenue[0]*100) : 0;
-  return { grossProfit, grossMargin, netMargin, debtToEquity, roe, revGrowth };
+  const grossMargin = d.revenue.map((r,i) => r>0?(r-d.cogs[i])/r*100:0);
+  const netMargin = d.revenue.map((r,i) => r>0?d.netProfit[i]/r*100:0);
+  const debtToEquity = d.shareholderEquity.map((e,i) => e>0?d.totalDebt[i]/e:0);
+  return {grossMargin,netMargin,debtToEquity};
 }
-
+function fmt(n) { return n>=1000?(n/1000).toFixed(1)+'K':Math.round(n).toLocaleString(); }
+function pct(v) { return v.toFixed(1)+'%'; }
+function gClass(v) { return v>0?'pos':v<0?'neg':'neu'; }
+function sendToChat(msg) { if(window.sendPrompt) window.sendPrompt(msg); }
 async function runAnalysis() {
   const d = getData();
-  if (d.revenue.every(v => v === 0)) { document.getElementById('statusMsg').textContent = 'Please enter revenue data first.'; return; }
-  document.getElementById('analyzeBtn').disabled = true;
+  if(d.revenue.every(v=>v===0)){document.getElementById('statusMsg').textContent='Please enter data first.';return;}
+  const btn = document.getElementById('analyzeBtn');
+  btn.disabled = true;
   document.getElementById('statusMsg').textContent = 'Analyzing...';
-
   const kpis = computeKPIs(d);
-
-  const prompt = `You are a Big 4 consultant (EY/PwC) analyzing a company's financial health. Given this 3-year financial data for ${d.companyName}:
-
-Revenue: ${d.revenue.join(', ')}
-COGS: ${d.cogs.join(', ')}
-Net Profit: ${d.netProfit.join(', ')}
-Total Debt: ${d.totalDebt.join(', ')}
-Shareholder Equity: ${d.shareholderEquity.join(', ')}
-Operating Cash Flow: ${d.operatingCashFlow.join(', ')}
-Gross Margin (%): ${kpis.grossMargin.map(v=>v.toFixed(1)).join(', ')}
-Net Margin (%): ${kpis.netMargin.map(v=>v.toFixed(1)).join(', ')}
-Debt-to-Equity: ${kpis.debtToEquity.map(v=>v.toFixed(2)).join(', ')}
-
-Respond ONLY with a JSON array of exactly 5 findings. Each finding has: "type" (one of: "strength", "risk", "watch"), "title" (5 words max), "detail" (1-2 sentences, specific to the numbers). No markdown, no preamble, no explanation outside the JSON array.`;
-
+  const prompt = `You are a Big 4 consultant analyzing ${d.companyName}. 3-year data — Revenue: ${d.revenue.join(', ')} | COGS: ${d.cogs.join(', ')} | Net Profit: ${d.netProfit.join(', ')} | Debt: ${d.totalDebt.join(', ')} | Equity: ${d.shareholderEquity.join(', ')} | CF: ${d.operatingCashFlow.join(', ')} | Gross Margin%: ${kpis.grossMargin.map(v=>v.toFixed(1)).join(', ')} | Net Margin%: ${kpis.netMargin.map(v=>v.toFixed(1)).join(', ')} | D/E: ${kpis.debtToEquity.map(v=>v.toFixed(2)).join(', ')}. Respond ONLY with a JSON array of exactly 5 objects: {"type":"strength"|"risk"|"watch","title":"max 5 words","detail":"1-2 sentences with specific numbers"}. No markdown, no preamble.`;
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, messages: [{ role: 'user', content: prompt }] })
-    });
+    const res = await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})});
     const json = await res.json();
-    const text = json.content.map(c => c.text || '').join('');
-    const clean = text.replace(/```json|```/g, '').trim();
-    const findings = JSON.parse(clean);
+    const text = json.content.map(c=>c.text||'').join('');
+    const findings = JSON.parse(text.replace(/```json|```/g,'').trim());
     renderDashboard(d, kpis, findings);
-  } catch(e) {
-    renderDashboard(d, kpis, null);
-  }
-
-  document.getElementById('analyzeBtn').disabled = false;
+  } catch(e) { renderDashboard(d, kpis, null); }
+  btn.disabled = false;
   document.getElementById('statusMsg').textContent = '';
 }
-
 function renderDashboard(d, kpis, findings) {
   document.getElementById('inputPanel').style.display = 'none';
   document.getElementById('dashboard').style.display = 'block';
-  document.getElementById('dashTitle').textContent = `Financial Health Report — ${d.companyName}`;
-
-  const revD = delta(d.revenue);
-  const npD = delta(d.netProfit);
+  document.getElementById('dashTitle').textContent = d.companyName;
+  document.getElementById('dashSub').textContent = 'Financial health report · ' + new Date().toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+  const revD = d.revenue[0]>0?((d.revenue[2]-d.revenue[0])/d.revenue[0]*100).toFixed(1):null;
+  const npD = d.netProfit[0]>0?((d.netProfit[2]-d.netProfit[0])/d.netProfit[0]*100).toFixed(1):null;
   const cards = [
-    { label: 'Revenue (latest)', val: fmt(d.revenue[2]), delta: revD !== null ? revD+'% (3yr)' : '', cls: growthClass(parseFloat(revD)) },
-    { label: 'Net profit (latest)', val: fmt(d.netProfit[2]), delta: npD !== null ? npD+'% (3yr)' : '', cls: growthClass(parseFloat(npD)) },
-    { label: 'Net margin', val: pct(kpis.netMargin[2]), delta: 'Year 3', cls: kpis.netMargin[2] > 10 ? 'pos' : kpis.netMargin[2] > 5 ? 'neu' : 'neg' },
-    { label: 'Debt / equity', val: kpis.debtToEquity[2].toFixed(2)+'x', delta: 'Year 3', cls: kpis.debtToEquity[2] < 1 ? 'pos' : kpis.debtToEquity[2] < 2 ? 'neu' : 'neg' },
+    {label:'Revenue (latest)',val:fmt(d.revenue[2]),delta:revD?revD+'% over 3yr':'-',cls:gClass(parseFloat(revD))},
+    {label:'Net profit',val:fmt(d.netProfit[2]),delta:npD?npD+'% over 3yr':'-',cls:gClass(parseFloat(npD))},
+    {label:'Net margin',val:pct(kpis.netMargin[2]),delta:'Year 3',cls:kpis.netMargin[2]>10?'pos':kpis.netMargin[2]>5?'neu':'neg'},
+    {label:'Debt / equity',val:kpis.debtToEquity[2].toFixed(2)+'x',delta:'Year 3',cls:kpis.debtToEquity[2]<1?'pos':kpis.debtToEquity[2]<2?'neu':'neg'},
   ];
-
-  document.getElementById('kpiCards').innerHTML = cards.map(c => `
-    <div class="fha-card">
-      <div class="fha-card-label">${c.label}</div>
-      <div class="fha-card-val">${c.val}</div>
-      <div class="fha-card-delta ${c.cls}">${c.delta}</div>
-    </div>`).join('');
-
+  document.getElementById('kpiCards').innerHTML = cards.map(c=>`<div class="kpi-card"><div class="kpi-label">${c.label}</div><div class="kpi-val">${c.val}</div><div class="kpi-delta ${c.cls}">${c.delta}</div></div>`).join('');
   const fc = document.getElementById('findingsContainer');
-  if (findings) {
-    fc.innerHTML = findings.map(f => {
-      const badgeClass = f.type === 'strength' ? 'badge-green' : f.type === 'risk' ? 'badge-red' : 'badge-amber';
-      const badgeLabel = f.type === 'strength' ? 'Strength' : f.type === 'risk' ? 'Risk' : 'Watch';
-      return `<div class="fha-finding"><span class="fha-badge ${badgeClass}">${badgeLabel}</span><span><strong>${f.title}</strong> — ${f.detail}</span></div>`;
+  if(findings) {
+    fc.innerHTML = findings.map(f=>{
+      const bc = f.type==='strength'?'badge-strength':f.type==='risk'?'badge-risk':'badge-watch';
+      return `<div class="finding"><span class="badge ${bc}">${f.type}</span><span class="finding-text"><strong>${f.title}</strong> — ${f.detail}</span></div>`;
     }).join('');
-  } else {
-    fc.innerHTML = '<div class="fha-finding"><span>AI analysis unavailable. Review the charts below for key trends.</span></div>';
-  }
-
-  const lbls = ['Year 1', 'Year 2', 'Year 3'];
-  const mkChart = (id, cfg) => {
-    if (chartInstances[id]) chartInstances[id].destroy();
-    chartInstances[id] = new Chart(document.getElementById(id), cfg);
-  };
-
-  mkChart('revChart', { type: 'bar', data: { labels: lbls, datasets: [
-    { label: 'Revenue', data: d.revenue, backgroundColor: '#B5D4F4', borderColor: '#378ADD', borderWidth: 1.5 },
-    { label: 'Net profit', data: d.netProfit, backgroundColor: '#9FE1CB', borderColor: '#1D9E75', borderWidth: 1.5 },
-  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { autoSkip: false } } } } });
-
-  mkChart('marginChart', { type: 'line', data: { labels: lbls, datasets: [
-    { label: 'Gross margin', data: kpis.grossMargin.map(v=>parseFloat(v.toFixed(1))), borderColor: '#BA7517', backgroundColor: 'rgba(186,117,23,0.1)', tension: 0.3, pointRadius: 4 },
-    { label: 'Net margin', data: kpis.netMargin.map(v=>parseFloat(v.toFixed(1))), borderColor: '#D85A30', backgroundColor: 'rgba(216,90,48,0.1)', tension: 0.3, pointRadius: 4 },
-  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { ticks: { callback: v => v+'%' } } } } });
-
-  mkChart('debtChart', { type: 'bar', data: { labels: lbls, datasets: [
-    { label: 'Total debt', data: d.totalDebt, backgroundColor: '#AFA9EC', borderColor: '#7F77DD', borderWidth: 1.5 },
-    { label: 'Equity', data: d.shareholderEquity, backgroundColor: '#F4C0D1', borderColor: '#D4537E', borderWidth: 1.5 },
-  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { autoSkip: false } } } } });
-
-  mkChart('cashChart', { type: 'line', data: { labels: lbls, datasets: [
-    { label: 'Operating cash flow', data: d.operatingCashFlow, borderColor: '#1D9E75', backgroundColor: 'rgba(29,158,117,0.1)', tension: 0.3, pointRadius: 5, fill: true },
-  ]}, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } } });
+  } else { fc.innerHTML = '<div class="finding"><span class="finding-text">Review the charts below for key trends.</span></div>'; }
+  const lbls = ['Year 1','Year 2','Year 3'];
+  const gc = 'rgba(255,255,255,0.05)', tc = '#5c6480';
+  const baseOpts = {responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:tc,font:{size:11}},grid:{color:gc}},y:{ticks:{color:tc,font:{size:11}},grid:{color:gc}}}};
+  const mk = (id,cfg) => { if(charts[id]) charts[id].destroy(); charts[id]=new Chart(document.getElementById(id),cfg); };
+  mk('revChart',{type:'bar',data:{labels:lbls,datasets:[{label:'Revenue',data:d.revenue,backgroundColor:'rgba(201,168,76,0.5)',borderColor:'#c9a84c',borderWidth:1.5},{label:'Net profit',data:d.netProfit,backgroundColor:'rgba(45,212,160,0.4)',borderColor:'#2dd4a0',borderWidth:1.5}]},options:baseOpts});
+  mk('marginChart',{type:'line',data:{labels:lbls,datasets:[{label:'Gross',data:kpis.grossMargin.map(v=>parseFloat(v.toFixed(1))),borderColor:'#c9a84c',backgroundColor:'rgba(201,168,76,0.08)',tension:0.3,pointRadius:4,pointBackgroundColor:'#c9a84c',fill:true},{label:'Net',data:kpis.netMargin.map(v=>parseFloat(v.toFixed(1))),borderColor:'#f5a623',backgroundColor:'rgba(245,166,35,0.06)',tension:0.3,pointRadius:4,pointBackgroundColor:'#f5a623',fill:true}]},options:{...baseOpts,scales:{...baseOpts.scales,y:{...baseOpts.scales.y,ticks:{...baseOpts.scales.y.ticks,callback:v=>v+'%'}}}}});
+  mk('debtChart',{type:'bar',data:{labels:lbls,datasets:[{label:'Debt',data:d.totalDebt,backgroundColor:'rgba(240,106,106,0.45)',borderColor:'#f06a6a',borderWidth:1.5},{label:'Equity',data:d.shareholderEquity,backgroundColor:'rgba(123,140,222,0.4)',borderColor:'#7b8cde',borderWidth:1.5}]},options:baseOpts});
+  mk('cashChart',{type:'line',data:{labels:lbls,datasets:[{label:'CF',data:d.operatingCashFlow,borderColor:'#2dd4a0',backgroundColor:'rgba(45,212,160,0.1)',tension:0.3,pointRadius:5,pointBackgroundColor:'#2dd4a0',fill:true}]},options:baseOpts});
 }
-
-function resetDash() {
-  document.getElementById('dashboard').style.display = 'none';
-  document.getElementById('inputPanel').style.display = 'block';
-}
-
+function resetDash() { document.getElementById('dashboard').style.display='none'; document.getElementById('inputPanel').style.display='block'; }
 buildTable();
 </script>
+</body>
+</html>
